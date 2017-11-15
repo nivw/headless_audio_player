@@ -1,0 +1,17 @@
+[Unit]
+Description=PulseAudio Sound System
+After=network.target sound.target avahi-daemon.service
+
+[Service]
+ExecStartPre=-/usr/bin/pax11publish -r
+Environment="SOCKET=`netstat -xlp | grep dbus |rev |cut -d' ' -f 1|rev`"
+#ExecStartPre=/bin/echo "/var/run/dbus/system_bus_socket" > ~/.dbus_session_socket
+ExecStartPre=/bin/echo $SOCKET > ~/.dbus_session_socket
+ExecStart=/usr/bin/pulseaudio --daemonize=no
+ExecReload=/bin/kill -HUP $MAINPID
+User=pi
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
